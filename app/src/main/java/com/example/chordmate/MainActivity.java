@@ -55,29 +55,87 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        ansA.setBackgroundColor(Color.BLACK);
-        ansB.setBackgroundColor(Color.BLACK);
-        ansC.setBackgroundColor(Color.BLACK);
-        ansD.setBackgroundColor(Color.BLACK);
-
         Button clickedButton = (Button) view;
+
         if (clickedButton.getId() == R.id.submit_btn) {
-            if (selectedAnswer.equals(QuestionAnswer.correctAnswers[currentQuestionIndex])) {
+            if (selectedAnswer.isEmpty()) {
+                new AlertDialog.Builder(this)
+                        .setMessage("Please select an answer before submitting!")
+                        .setPositiveButton("OK", null)
+                        .show();
+                return;
+            }
+
+            String correctAnswer = QuestionAnswer.correctAnswers[currentQuestionIndex];
+
+            if (ansA.getText().toString().equals(correctAnswer)) {
+                ansA.setBackgroundColor(Color.GREEN);
+            } else if (ansA.getText().toString().equals(selectedAnswer)) {
+                ansA.setBackgroundColor(Color.RED);
+            }
+
+            if (ansB.getText().toString().equals(correctAnswer)) {
+                ansB.setBackgroundColor(Color.GREEN);
+            } else if (ansB.getText().toString().equals(selectedAnswer)) {
+                ansB.setBackgroundColor(Color.RED);
+            }
+
+            if (ansC.getText().toString().equals(correctAnswer)) {
+                ansC.setBackgroundColor(Color.GREEN);
+            } else if (ansC.getText().toString().equals(selectedAnswer)) {
+                ansC.setBackgroundColor(Color.RED);
+            }
+
+            if (ansD.getText().toString().equals(correctAnswer)) {
+                ansD.setBackgroundColor(Color.GREEN);
+            } else if (ansD.getText().toString().equals(selectedAnswer)) {
+                ansD.setBackgroundColor(Color.RED);
+            }
+
+            if (selectedAnswer.equals(correctAnswer)) {
                 score++;
             }
-            currentQuestionIndex++;
-            loadNewQuestion();
+
+            ansA.setEnabled(false);
+            ansB.setEnabled(false);
+            ansC.setEnabled(false);
+            ansD.setEnabled(false);
+
+            new android.os.Handler().postDelayed(() -> {
+                currentQuestionIndex++;
+                loadNewQuestion();
+            }, 2000);
         } else {
             selectedAnswer = clickedButton.getText().toString();
+
+            ansA.setBackgroundColor(Color.BLACK);
+            ansB.setBackgroundColor(Color.BLACK);
+            ansC.setBackgroundColor(Color.BLACK);
+            ansD.setBackgroundColor(Color.BLACK);
+
             clickedButton.setBackgroundColor(Color.GRAY);
         }
     }
+
 
     void loadNewQuestion() {
         if (currentQuestionIndex == totalQuestion) {
             finishQuiz();
             return;
         }
+
+        ansA.setBackgroundColor(Color.BLACK);
+        ansB.setBackgroundColor(Color.BLACK);
+        ansC.setBackgroundColor(Color.BLACK);
+        ansD.setBackgroundColor(Color.BLACK);
+
+        ansA.setEnabled(true);
+        ansB.setEnabled(true);
+        ansC.setEnabled(true);
+        ansD.setEnabled(true);
+
+        selectedAnswer = "";
+        submitBtn.setText("Submit");
 
         questionTextView.setText(QuestionAnswer.question[currentQuestionIndex]);
         chordImageView.setImageResource(QuestionAnswer.images[currentQuestionIndex]);
@@ -86,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ansC.setText(QuestionAnswer.choices[currentQuestionIndex][2]);
         ansD.setText(QuestionAnswer.choices[currentQuestionIndex][3]);
     }
+
 
     void finishQuiz() {
         String passStatus = "";
@@ -112,5 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         score = 0;
         currentQuestionIndex = 0;
         loadNewQuestion();
+
+
     }
 }
