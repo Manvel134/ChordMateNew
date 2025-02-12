@@ -1,4 +1,4 @@
-package com.example.chordmate;
+package my.app.chordmate;
 
 import android.content.Context;
 

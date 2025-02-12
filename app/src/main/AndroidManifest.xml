@@ -12,16 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChordMate"
         tools:targetApi="31">
-        <activity android:name=".MainMenuActivity"
+        <activity android:name="my.app.chordmate.MainMenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".ChordsActivity" />
-        <activity android:name=".FullscreenChordActivity"
+        <activity android:name="my.app.chordmate.MainActivity" />
+        <activity android:name="my.app.chordmate.ChordsActivity" />
+        <activity android:name="my.app.chordmate.FullscreenChordActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
     </application>

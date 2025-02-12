@@ -1,4 +1,6 @@
-package com.example.chordmate;
+package my.app.chordmate;
+
+import com.example.chordmate.R;
 
 public class QuestionAnswer {
 

@@ -1,4 +1,4 @@
-package com.example.chordmate;
+package my.app.chordmate;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.chordmate.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

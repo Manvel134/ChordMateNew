@@ -4,6 +4,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#FFC18C">
 
+    <TextView
+        android:id="@+id/chord_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
+
+
+
     <ImageView
         android:id="@+id/fullscreen_chord_image"
         android:layout_width="match_parent"

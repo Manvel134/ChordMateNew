@@ -1,10 +1,12 @@
-package com.example.chordmate;
+package my.app.chordmate;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.chordmate.R;
 
 public class MainMenuActivity extends AppCompatActivity {
 
