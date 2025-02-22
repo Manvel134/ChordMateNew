@@ -27,6 +27,16 @@
         android:scaleType="fitCenter"
         android:background="@color/white" />
 
+
+    <ImageButton
+        android:id="@+id/play_chord_audio_btn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:contentDescription="Play Chord Audio"
+        android:src="@drawable/audio" />
+
     <TextView
         android:id="@+id/question"
         android:layout_width="match_parent"

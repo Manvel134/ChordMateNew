@@ -22,7 +22,6 @@ public class ChordsActivity extends AppCompatActivity {
         setupChordCard(R.id.e_card, R.drawable.e_chord, "E Major (E)");
         setupChordCard(R.id.g_card, R.drawable.g_chord, "G Major (G)");
 
-        // Back button logic
         findViewById(R.id.back_to_menu_button).setOnClickListener(v -> finish());
     }
 

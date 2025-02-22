@@ -6,8 +6,11 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.media.MediaPlayer;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +21,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView totalQuestionsTextView, questionTextView;
     ImageView chordImageView;
     Button ansA, ansB, ansC, ansD, submitBtn, mainMenuBtn;
+
+    ImageButton playAudioBtn;
+    MediaPlayer mediaPlayer;
 
     int score = 0;
     int totalQuestion = QuestionAnswer.question.length;
@@ -32,6 +38,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         totalQuestionsTextView = findViewById(R.id.total_question);
         questionTextView = findViewById(R.id.question);
         chordImageView = findViewById(R.id.chord_image);
+
+        playAudioBtn = findViewById(R.id.play_chord_audio_btn);
+        playAudioBtn.setOnClickListener(v -> playChordAudio());
+
         ansA = findViewById(R.id.ans_A);
         ansB = findViewById(R.id.ans_B);
         ansC = findViewById(R.id.ans_C);
@@ -145,6 +155,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ansB.setText(QuestionAnswer.choices[currentQuestionIndex][1]);
         ansC.setText(QuestionAnswer.choices[currentQuestionIndex][2]);
         ansD.setText(QuestionAnswer.choices[currentQuestionIndex][3]);
+    }
+
+    void playChordAudio() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+
+        mediaPlayer = MediaPlayer.create(this, QuestionAnswer.audios[currentQuestionIndex]);
+        mediaPlayer.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
 

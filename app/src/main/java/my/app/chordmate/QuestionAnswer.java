@@ -10,6 +10,13 @@ public class QuestionAnswer {
             "What chord is this?"
     };
 
+    public static int audios[] = {
+            R.raw.am_audio,
+            R.raw.em_audio,
+            R.raw.d_audio
+    };
+
+
     public static String choices[][] = {
             {"Am", "A", "Am7", "Em"},
             {"E", "E7", "Em", "Emaj"},
