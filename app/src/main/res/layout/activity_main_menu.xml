@@ -2,36 +2,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFC18C"
+    android:background="@drawable/guitar_hole"
     android:padding="20dp">
 
     <TextView
         android:id="@+id/app_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ChordMate"
-        android:textSize="32sp"
-        android:textColor="#000"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp" />
-
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_below="@id/app_title"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:src="@drawable/logo_no_background" />
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:text="ChordMate"
+        android:textColor="#000"
+        android:textSize="60sp" />
 
     <Button
         android:id="@+id/practice_button"
         android:layout_width="242dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/logo"
+        android:layout_above="@id/chords_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_marginBottom="20dp"
         android:backgroundTint="#000"
+        android:gravity="center"
         android:padding="10dp"
         android:text="Practice"
         android:textColor="#FFF" />
@@ -40,24 +35,25 @@
         android:id="@+id/chords_button"
         android:layout_width="242dp"
         android:layout_height="wrap_content"
-        android:text="Chords"
-        android:layout_below="@id/practice_button"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
         android:backgroundTint="#000"
-        android:textColor="#FFF"
-        android:padding="10dp" />
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="Chords"
+        android:textColor="#FFF" />
 
     <Button
         android:id="@+id/quit_button"
         android:layout_width="242dp"
         android:layout_height="wrap_content"
-        android:text="Quit"
         android:layout_below="@id/chords_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:backgroundTint="#000"
-        android:textColor="#FFF"
-        android:padding="10dp" />
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="Quit"
+        android:textColor="#FFF" />
 
 </RelativeLayout>
