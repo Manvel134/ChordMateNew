@@ -38,15 +38,13 @@
         android:scaleType="fitCenter"
         android:src="@drawable/ic_back_arrow" />
 
-    <ImageButton
+    <Button
         android:id="@+id/play_chord_audio_btn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="Play Chord Audio"
-        android:src="@drawable/audio" />
+        android:text="Play Chord" />
 
 </RelativeLayout>

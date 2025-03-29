@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageView chordImageView;
     Button ansA, ansB, ansC, ansD, submitBtn, mainMenuBtn;
 
-    ImageButton playAudioBtn;
+    Button playAudioBtn;
     MediaPlayer mediaPlayer;
 
     int score = 0;

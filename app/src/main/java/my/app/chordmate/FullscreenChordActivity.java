@@ -1,6 +1,8 @@
 package my.app.chordmate;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,10 +23,16 @@ public class FullscreenChordActivity extends AppCompatActivity {
         ImageView chordImage = findViewById(R.id.fullscreen_chord_image);
         TextView chordNameTextView = findViewById(R.id.chord_name);
         ImageButton backButton = findViewById(R.id.back_button);
-        ImageButton playAudioButton = findViewById(R.id.play_chord_audio_btn);
+        Button playAudioButton = findViewById(R.id.play_chord_audio_btn);
 
         int imageResId = getIntent().getIntExtra("chord_image", R.drawable.default_image);
         currentChordName = getIntent().getStringExtra("chord_name");
+
+        if (currentChordName == null) {
+            currentChordName = "";
+        }
+
+        Log.d("FullscreenChordActivity", "Chord Name: " + currentChordName);
 
         chordImage.setImageResource(imageResId);
         chordNameTextView.setText(currentChordName);
@@ -37,27 +45,55 @@ public class FullscreenChordActivity extends AppCompatActivity {
 
     private void playCurrentChordAudio() {
         int audioResId = getAudioResId(currentChordName);
+
+        if (audioResId == 0) {
+            Log.e("FullscreenChordActivity", "Audio resource not found for: " + currentChordName);
+            return;
+        }
+
+        Log.d("FullscreenChordActivity", "Playing audio for: " + currentChordName);
         audioPlayer.playAudio(audioResId);
     }
 
     private int getAudioResId(String chordName) {
+        chordName = chordName.trim().toLowerCase(); // Normalize input
+
         switch (chordName) {
-            case "Am":
+            case "am":
+            case "a minor (am)":
+            case "a minor":
                 return R.raw.am_audio;
-            case "D":
+
+            case "d major (d)":
+            case "d major":
+            case "d":
                 return R.raw.d_audio;
-            case "E":
+
+            case "e major (e)":
+            case "e major":
+            case "e":
                 return R.raw.e_audio;
-            case "Em":
+
+            case "e minor (em)":
+            case "em":
+            case "e minor":
                 return R.raw.em_audio;
-            case "G":
+
+            case "g major (g)":
+            case "g major":
+            case "g":
                 return R.raw.g_audio;
-            case "Dm":
+
+            case "dm":
+            case "d minor":
+            case "d minor (dm)":
                 return R.raw.dm_audio;
             default:
+                Log.e("FullscreenChordActivity", "Unknown chord: " + chordName);
                 return 0;
         }
     }
+
 
     @Override
     protected void onDestroy() {

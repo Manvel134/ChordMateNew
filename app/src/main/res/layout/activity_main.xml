@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFC18C"
+    android:background="@drawable/background"
     android:padding="16dp"
     tools:context="my.app.chordmate.MainActivity">
 
@@ -16,20 +16,23 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <ImageButton
+    <Button
         android:id="@+id/play_chord_audio_btn"
-        android:layout_width="126dp"
-        android:layout_height="116dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="55dp"
-        android:layout_marginEnd="115dp"
-        android:background="@android:color/transparent"
-        android:contentDescription="Play Chord Audio"
-        android:src="@drawable/audio"
-        android:visibility="visible"
-        tools:src="@drawable/audio"
-        tools:visibility="visible" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/chord_image"
+        android:layout_below="@id/total_question"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:padding="8dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:text="Play\nChord" />
+
 
     <ImageView
         android:id="@+id/chord_image"
