@@ -6,11 +6,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.media.MediaPlayer;
-
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,11 +16,9 @@ import com.example.chordmate.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    TextView totalQuestionsTextView, questionTextView;
+    TextView totalQuestionsTextView, questionTextView, currentQuestionTextView;
     ImageView chordImageView;
-    Button ansA, ansB, ansC, ansD, submitBtn, mainMenuBtn;
-
-    Button playAudioBtn;
+    Button ansA, ansB, ansC, ansD, submitBtn, mainMenuBtn, playAudioBtn;
     MediaPlayer mediaPlayer;
 
     int score = 0;
@@ -36,11 +32,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         totalQuestionsTextView = findViewById(R.id.total_question);
+        currentQuestionTextView = findViewById(R.id.current_question);
         questionTextView = findViewById(R.id.question);
         chordImageView = findViewById(R.id.chord_image);
-
         playAudioBtn = findViewById(R.id.play_chord_audio_btn);
-        playAudioBtn.setOnClickListener(v -> playChordAudio());
 
         ansA = findViewById(R.id.ans_A);
         ansB = findViewById(R.id.ans_B);
@@ -54,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ansC.setOnClickListener(this);
         ansD.setOnClickListener(this);
         submitBtn.setOnClickListener(this);
+        playAudioBtn.setOnClickListener(v -> playChordAudio());
 
         mainMenuBtn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MainMenuActivity.class);
@@ -62,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         totalQuestionsTextView.setText("Total questions: " + totalQuestion);
+        updateQuestionNumber();
         loadNewQuestion();
     }
 
@@ -80,58 +77,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             String correctAnswer = QuestionAnswer.correctAnswers[currentQuestionIndex];
 
-            if (ansA.getText().toString().equals(correctAnswer)) {
-                ansA.setBackgroundColor(Color.GREEN);
-            } else if (ansA.getText().toString().equals(selectedAnswer)) {
-                ansA.setBackgroundColor(Color.RED);
-            }
-
-            if (ansB.getText().toString().equals(correctAnswer)) {
-                ansB.setBackgroundColor(Color.GREEN);
-            } else if (ansB.getText().toString().equals(selectedAnswer)) {
-                ansB.setBackgroundColor(Color.RED);
-            }
-
-            if (ansC.getText().toString().equals(correctAnswer)) {
-                ansC.setBackgroundColor(Color.GREEN);
-            } else if (ansC.getText().toString().equals(selectedAnswer)) {
-                ansC.setBackgroundColor(Color.RED);
-            }
-
-            if (ansD.getText().toString().equals(correctAnswer)) {
-                ansD.setBackgroundColor(Color.GREEN);
-            } else if (ansD.getText().toString().equals(selectedAnswer)) {
-                ansD.setBackgroundColor(Color.RED);
+            Button[] buttons = {ansA, ansB, ansC, ansD};
+            for (Button btn : buttons) {
+                if (btn.getText().toString().equals(correctAnswer)) {
+                    btn.setBackgroundColor(Color.GREEN);
+                } else if (btn.getText().toString().equals(selectedAnswer)) {
+                    btn.setBackgroundColor(Color.RED);
+                }
+                btn.setEnabled(false);
             }
 
             if (selectedAnswer.equals(correctAnswer)) {
                 score++;
             }
 
-            ansA.setEnabled(false);
-            ansB.setEnabled(false);
-            ansC.setEnabled(false);
-            ansD.setEnabled(false);
-
             new android.os.Handler().postDelayed(() -> {
                 currentQuestionIndex++;
+                updateQuestionNumber();
                 loadNewQuestion();
             }, 2000);
         } else {
             selectedAnswer = clickedButton.getText().toString();
-
             ansA.setBackgroundColor(Color.BLACK);
             ansB.setBackgroundColor(Color.BLACK);
             ansC.setBackgroundColor(Color.BLACK);
             ansD.setBackgroundColor(Color.BLACK);
-
             clickedButton.setBackgroundColor(Color.GRAY);
         }
     }
 
-
     void loadNewQuestion() {
-        if (currentQuestionIndex == totalQuestion) {
+        if (currentQuestionIndex >= totalQuestion) {
             finishQuiz();
             return;
         }
@@ -158,13 +134,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void playChordAudio() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
+        if (mediaPlayer != null) {
             mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+        if (currentQuestionIndex >= QuestionAnswer.audios.length || QuestionAnswer.audios[currentQuestionIndex] == 0) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Audio resource not found!")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
         }
 
         mediaPlayer = MediaPlayer.create(this, QuestionAnswer.audios[currentQuestionIndex]);
-        mediaPlayer.start();
+        if (mediaPlayer != null) {
+            mediaPlayer.start();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setMessage("Error loading audio file!")
+                    .setPositiveButton("OK", null)
+                    .show();
+        }
     }
 
     @Override
@@ -176,14 +167,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
     void finishQuiz() {
-        String passStatus = "";
-        if (score > totalQuestion * 0.60) {
-            passStatus = "Passed";
-        } else {
-            passStatus = "Failed";
-        }
+        String passStatus = score > totalQuestion * 0.60 ? "Passed" : "Failed";
 
         new AlertDialog.Builder(this)
                 .setTitle(passStatus)
@@ -201,8 +186,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     void restartQuiz() {
         score = 0;
         currentQuestionIndex = 0;
+        updateQuestionNumber();
         loadNewQuestion();
+    }
 
-
+    private void updateQuestionNumber() {
+        currentQuestionTextView.setText("Question: " + (currentQuestionIndex + 1));
     }
 }
