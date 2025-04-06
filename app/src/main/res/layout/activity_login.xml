@@ -60,21 +60,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:text="Login"
-                android:id="@+id/signup_button"
+                android:id="@+id/login_button"
                 android:textSize="18sp"
                 android:layout_marginTop="30dp"
                 app:cornerRadius = "20dp"/>
 
             <TextView
-                android:layout_width ="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/signupRedirectText"
-                android:text="Not yet registered? Sign up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="8dp"
                 android:layout_marginTop="10dp"
-                android:textSize="18sp"
-                android:textColor="@color/black"/>
+                android:padding="8dp"
+                android:text="Not yet registered? Sign up"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
 
         </LinearLayout>
