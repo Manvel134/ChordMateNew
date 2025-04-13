@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -26,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText loginUsername, loginPassword;
     TextView signupRedirectText;
-    Button loginButton;
+    Button loginButton, guestModeButton;
     FirebaseDatabase database;
     DatabaseReference reference;
 
@@ -40,12 +41,13 @@ public class LoginActivity extends AppCompatActivity {
         loginPassword = findViewById(R.id.login_password);
         signupRedirectText = findViewById(R.id.signupRedirectText);
         loginButton = findViewById(R.id.login_button);
+        guestModeButton = findViewById(R.id.guest_mode_button);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!validateUsername() | !validatePassword()) {
-
+                    // Validation failed
                 } else {
                     checkUser();
                 }
@@ -56,6 +58,18 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        guestModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(LoginActivity.this, "Continuing as guest", Toast.LENGTH_SHORT).show();
+
+
+                Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                intent.putExtra("GUEST_MODE", true);
                 startActivity(intent);
             }
         });
@@ -99,7 +113,12 @@ public class LoginActivity extends AppCompatActivity {
 
                     if (passwordFromDB.equals(userPassword)){
                         loginUsername.setError(null);
+
+                        String username = snapshot.child(userUsername).child("username").getValue(String.class);
+
                         Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
+                        intent.putExtra("USERNAME", username);
+                        intent.putExtra("GUEST_MODE", false);
                         startActivity(intent);
                     } else {
                         loginPassword.setError("Invalid Credentials");
@@ -113,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(LoginActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
