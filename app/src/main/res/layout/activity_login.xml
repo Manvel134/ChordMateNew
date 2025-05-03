@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -37,10 +36,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:id="@+id/login_username"
+                android:background="@color/warm_surfaceVariant"
                 android:layout_marginTop="40dp"
                 android:padding="8dp"
-                android:hint="Username"
-                android:drawableLeft="@drawable/baseline_person_pin_24"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:drawableLeft="@drawable/baseline_email_24"
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"/>
 
@@ -48,52 +49,46 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:id="@+id/login_password"
-                android:layout_marginTop="40dp"
+                android:background="@color/warm_surfaceVariant"
+                android:layout_marginTop="20dp"
                 android:padding="8dp"
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:drawableLeft="@drawable/baseline_lock_24"
+                android:drawableRight="@drawable/ic_visibility_off"
                 android:drawablePadding="8dp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/forgotPassword"
+                android:text="Forgot Password?"
+                android:layout_gravity="end"
+                android:padding="8dp"
+                android:layout_marginTop="5dp"
+                android:textSize="16sp"
                 android:textColor="@color/black"/>
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="Login"
+                android:text="Log in"
                 android:id="@+id/login_button"
                 android:textSize="18sp"
                 android:layout_marginTop="30dp"
                 app:cornerRadius = "20dp"/>
 
             <TextView
-                android:id="@+id/signupRedirectText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/signupRedirectText"
+                android:text="not a member? signup"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
                 android:padding="8dp"
-                android:text="Not yet registered? Sign up"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="OR"
-                android:textAlignment="center"
-                android:textSize="16sp"
                 android:layout_marginTop="10dp"
-                android:textColor="@color/black"/>
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="Continue as Guest"
-                android:id="@+id/guest_mode_button"
                 android:textSize="18sp"
-                android:layout_marginTop="10dp"
-                app:cornerRadius = "20dp"
-                android:backgroundTint="@android:color/darker_gray"/>
+                android:textColor="@color/black"/>
 
         </LinearLayout>
 

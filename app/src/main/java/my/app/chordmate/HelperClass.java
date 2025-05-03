@@ -1,17 +1,28 @@
 package my.app.chordmate;
 
 public class HelperClass {
-
-    String name, email, username, password;
+    String name, email, username;
+    boolean emailVerified;
+    long createdTimestamp;
 
     public HelperClass() {
+        // Default constructor required for Firebase
     }
 
     public HelperClass(String name, String email, String username, String password) {
         this.name = name;
         this.email = email;
         this.username = username;
-        this.password = password;
+        this.emailVerified = false;
+        this.createdTimestamp = System.currentTimeMillis();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -30,19 +41,19 @@ public class HelperClass {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public boolean isEmailVerified() {
+        return emailVerified;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
-    public String getName() {
-        return name;
+    public long getCreatedTimestamp() {
+        return createdTimestamp;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCreatedTimestamp(long createdTimestamp) {
+        this.createdTimestamp = createdTimestamp;
     }
 }

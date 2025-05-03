@@ -45,5 +45,9 @@
     <color name="dark_background">#121212</color>
     <color name="dark_text">#FFFFFF</color>
 
+    <color name="warm_accent">#FF9671</color>
+    <color name="warm_surface">#FFF5EA</color>
+    <color name="warm_surfaceVariant">#F4E5D6</color>
+    <color name="warm_onSurface">#3D3D3D</color>
 
 </resources>

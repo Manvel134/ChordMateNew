@@ -37,6 +37,10 @@
         <activity
             android:name="my.app.chordmate.FullscreenChordActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <activity
+            android:name="my.app.chordmate.VerificationActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
