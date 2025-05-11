@@ -29,6 +29,10 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     boolean passwordVisible = false;
 
+    // Default credentials
+    private static final String DEFAULT_EMAIL = "testusercoding981@gmail.com";
+    private static final String DEFAULT_PASSWORD = "test1029";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,10 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         signupRedirectText = findViewById(R.id.signupRedirectText);
         forgotPasswordText = findViewById(R.id.forgotPassword);
+
+        // Pre-fill the login fields with default credentials
+        loginUsername.setText(DEFAULT_EMAIL);
+        loginPassword.setText(DEFAULT_PASSWORD);
 
         // Check if coming from signup with verification pending
         if (getIntent().getBooleanExtra("VERIFICATION_PENDING", false)) {
@@ -115,9 +123,9 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             if (user.isEmailVerified()) {
-                                // Email is verified, proceed to main app
+                                // Email is verified, proceed to main menu
                                 Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                                 startActivity(intent);
                                 finish();
                             } else {
