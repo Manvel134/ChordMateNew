@@ -1,18 +1,22 @@
 package my.app.chordmate;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.media.MediaPlayer;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chordmate.R;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -20,16 +24,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageView chordImageView;
     Button ansA, ansB, ansC, ansD, submitBtn, mainMenuBtn, playAudioBtn;
     MediaPlayer mediaPlayer;
+    ProgressDialog loadingDialog;
 
     int score = 0;
-    int totalQuestion = QuestionAnswer.question.length;
+    int totalQuestion = 0;
     int currentQuestionIndex = 0;
     String selectedAnswer = "";
+
+    private List<ChordQuestion> chordQuestions;
+    private SupabaseManager supabaseManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize Supabase Manager
+        supabaseManager = SupabaseManager.getInstance(this);
 
         totalQuestionsTextView = findViewById(R.id.total_question);
         currentQuestionTextView = findViewById(R.id.current_question);
@@ -57,9 +68,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             finish();
         });
 
-        totalQuestionsTextView.setText("Total questions: " + totalQuestion);
-        updateQuestionNumber();
-        loadNewQuestion();
+        // Show loading dialog
+        loadingDialog = new ProgressDialog(this);
+        loadingDialog.setMessage("Loading chord data...");
+        loadingDialog.setCancelable(false);
+        loadingDialog.show();
+
+        // Load data from Supabase
+        loadChordData();
+    }
+
+    private void loadChordData() {
+        supabaseManager.loadChordData(new SupabaseManager.DataLoadCallback() {
+            @Override
+            public void onDataLoaded(final List<ChordQuestion> questions) {
+                runOnUiThread(() -> {
+                    loadingDialog.dismiss();
+                    chordQuestions = questions;
+                    totalQuestion = chordQuestions.size();
+                    totalQuestionsTextView.setText("Total questions: " + totalQuestion);
+                    updateQuestionNumber();
+                    loadNewQuestion();
+                });
+            }
+
+            @Override
+            public void onError(final String errorMessage) {
+                runOnUiThread(() -> {
+                    loadingDialog.dismiss();
+                    Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                    // Fallback to local data or show error
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("Error")
+                            .setMessage("Failed to load chord data: " + errorMessage)
+                            .setPositiveButton("Retry", (dialog, which) -> loadChordData())
+                            .setNegativeButton("Exit", (dialog, which) -> finish())
+                            .setCancelable(false)
+                            .show();
+                });
+            }
+        });
     }
 
     @Override
@@ -75,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return;
             }
 
-            String correctAnswer = QuestionAnswer.correctAnswers[currentQuestionIndex];
+            String correctAnswer = chordQuestions.get(currentQuestionIndex).getCorrectAnswer();
 
             Button[] buttons = {ansA, ansB, ansC, ansD};
             for (Button btn : buttons) {
@@ -125,12 +173,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         selectedAnswer = "";
         submitBtn.setText("Submit");
 
-        questionTextView.setText(QuestionAnswer.question[currentQuestionIndex]);
-        chordImageView.setImageResource(QuestionAnswer.images[currentQuestionIndex]);
-        ansA.setText(QuestionAnswer.choices[currentQuestionIndex][0]);
-        ansB.setText(QuestionAnswer.choices[currentQuestionIndex][1]);
-        ansC.setText(QuestionAnswer.choices[currentQuestionIndex][2]);
-        ansD.setText(QuestionAnswer.choices[currentQuestionIndex][3]);
+        ChordQuestion currentQuestion = chordQuestions.get(currentQuestionIndex);
+        questionTextView.setText(currentQuestion.getQuestion());
+
+        // Load image from Supabase
+        supabaseManager.loadImageIntoView(currentQuestion.getImageUrl(), chordImageView);
+
+        // Set answer choices
+        String[] choices = currentQuestion.getChoices();
+        ansA.setText(choices[0]);
+        ansB.setText(choices[1]);
+        ansC.setText(choices[2]);
+        ansD.setText(choices[3]);
     }
 
     void playChordAudio() {
@@ -139,7 +193,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mediaPlayer = null;
         }
 
-        if (currentQuestionIndex >= QuestionAnswer.audios.length || QuestionAnswer.audios[currentQuestionIndex] == 0) {
+        if (currentQuestionIndex >= totalQuestion) {
+            return;
+        }
+
+        final String audioUrl = chordQuestions.get(currentQuestionIndex).getAudioUrl();
+        if (audioUrl == null || audioUrl.isEmpty()) {
             new AlertDialog.Builder(this)
                     .setMessage("Audio resource not found!")
                     .setPositiveButton("OK", null)
@@ -147,15 +206,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
-        mediaPlayer = MediaPlayer.create(this, QuestionAnswer.audios[currentQuestionIndex]);
-        if (mediaPlayer != null) {
-            mediaPlayer.start();
-        } else {
-            new AlertDialog.Builder(this)
-                    .setMessage("Error loading audio file!")
-                    .setPositiveButton("OK", null)
-                    .show();
-        }
+        // Show loading while preparing audio
+        Toast.makeText(this, "Loading audio...", Toast.LENGTH_SHORT).show();
+
+        supabaseManager.prepareAudioPlayer(audioUrl, new SupabaseManager.AudioPreparedCallback() {
+            @Override
+            public void onAudioPrepared(MediaPlayer preparedPlayer) {
+                runOnUiThread(() -> {
+                    mediaPlayer = preparedPlayer;
+                    mediaPlayer.setOnCompletionListener(mp -> {
+                        if (mediaPlayer != null) {
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }
+                    });
+                    mediaPlayer.start();
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                runOnUiThread(() -> {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setMessage("Error loading audio: " + errorMessage)
+                            .setPositiveButton("OK", null)
+                            .show();
+                });
+            }
+        });
     }
 
     @Override

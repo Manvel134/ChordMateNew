@@ -48,5 +48,19 @@ dependencies {
     // Firebase Core
     implementation 'com.google.firebase:firebase-core:21.1.1'
 
+    // Add Supabase dependencies
+    implementation 'io.github.jan-tennert.supabase:storage-kt:1.1.0'
+    implementation 'io.github.jan-tennert.supabase:postgrest-kt:1.1.0'
+    implementation 'io.ktor:ktor-client-android:2.0.3'
+    implementation 'io.ktor:ktor-client-content-negotiation:2.0.3'
+    implementation 'io.ktor:ktor-serialization-gson:2.0.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+
+    // For handling images from URLs
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+
+    // Add this to your app-level build.gradle dependencies section
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+
 }
 apply plugin: 'com.google.gms.google-services'
