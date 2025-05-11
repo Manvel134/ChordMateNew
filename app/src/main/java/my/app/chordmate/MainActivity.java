@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.chordmate.R;
 
 import java.util.List;
@@ -111,6 +113,78 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Clean up resources
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+        // Clean up the SupabaseManager resources
+        supabaseManager.cleanup();
+    }
+
+    // Add this method to preload the next question's media
+    private void preloadNextQuestion() {
+        if (currentQuestionIndex + 1 < totalQuestion) {
+            ChordQuestion nextQuestion = chordQuestions.get(currentQuestionIndex + 1);
+
+            // Preload the next question's image into Glide's cache
+            String imageUrl = supabaseManager.getFullStorageUrl(nextQuestion.getImageUrl());
+            Glide.with(this)
+                    .load(imageUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .preload();
+        }
+    }
+
+    void loadNewQuestion() {
+        if (currentQuestionIndex >= totalQuestion) {
+            finishQuiz();
+            return;
+        }
+
+        ansA.setBackgroundColor(Color.BLACK);
+        ansB.setBackgroundColor(Color.BLACK);
+        ansC.setBackgroundColor(Color.BLACK);
+        ansD.setBackgroundColor(Color.BLACK);
+
+        ansA.setEnabled(true);
+        ansB.setEnabled(true);
+        ansC.setEnabled(true);
+        ansD.setEnabled(true);
+
+        selectedAnswer = "";
+        submitBtn.setText("Submit");
+
+        ChordQuestion currentQuestion = chordQuestions.get(currentQuestionIndex);
+        questionTextView.setText(currentQuestion.getQuestion());
+
+        // Load image from Supabase
+        supabaseManager.loadImageIntoView(currentQuestion.getImageUrl(), chordImageView);
+
+        // Set answer choices
+        String[] choices = currentQuestion.getChoices();
+        ansA.setText(choices[0]);
+        ansB.setText(choices[1]);
+        ansC.setText(choices[2]);
+        ansD.setText(choices[3]);
+
+        // Preload the next question's media
+        preloadNextQuestion();
+    }
+
+    @Override
     public void onClick(View view) {
         Button clickedButton = (Button) view;
 
@@ -152,39 +226,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ansD.setBackgroundColor(Color.BLACK);
             clickedButton.setBackgroundColor(Color.GRAY);
         }
-    }
-
-    void loadNewQuestion() {
-        if (currentQuestionIndex >= totalQuestion) {
-            finishQuiz();
-            return;
-        }
-
-        ansA.setBackgroundColor(Color.BLACK);
-        ansB.setBackgroundColor(Color.BLACK);
-        ansC.setBackgroundColor(Color.BLACK);
-        ansD.setBackgroundColor(Color.BLACK);
-
-        ansA.setEnabled(true);
-        ansB.setEnabled(true);
-        ansC.setEnabled(true);
-        ansD.setEnabled(true);
-
-        selectedAnswer = "";
-        submitBtn.setText("Submit");
-
-        ChordQuestion currentQuestion = chordQuestions.get(currentQuestionIndex);
-        questionTextView.setText(currentQuestion.getQuestion());
-
-        // Load image from Supabase
-        supabaseManager.loadImageIntoView(currentQuestion.getImageUrl(), chordImageView);
-
-        // Set answer choices
-        String[] choices = currentQuestion.getChoices();
-        ansA.setText(choices[0]);
-        ansB.setText(choices[1]);
-        ansC.setText(choices[2]);
-        ansD.setText(choices[3]);
     }
 
     void playChordAudio() {
@@ -234,15 +275,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
     }
 
     void finishQuiz() {

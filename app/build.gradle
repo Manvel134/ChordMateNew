@@ -62,5 +62,12 @@ dependencies {
     // Add this to your app-level build.gradle dependencies section
     implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 
+    // Better image caching
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
+
+    // For smoother UI transitions and animations
+    implementation 'androidx.transition:transition:1.4.1'
+
 }
 apply plugin: 'com.google.gms.google-services'
