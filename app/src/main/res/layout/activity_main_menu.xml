@@ -1,59 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/guitar_hole_2"
-    android:padding="20dp">
+    android:background="@drawable/guitar_hole_2">
+
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/app_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="48dp"
         android:fontFamily="cursive"
-        android:gravity="center"
         android:text="ChordMate"
-        android:textColor="#000"
-        android:textSize="60sp" />
+        android:textColor="#FFFFFF"
+        android:textSize="64sp"
+        android:textStyle="bold"
+        android:shadowColor="#000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/practice_button"
-        android:layout_width="242dp"
+    <TextView
+        android:id="@+id/app_subtitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/chords_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="#000"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="Practice"
-        android:textColor="#FFF" />
+        android:layout_marginTop="8dp"
+        android:text="Master your guitar chords"
+        android:textColor="#E0E0E0"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-light"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/app_title" />
 
-    <Button
-        android:id="@+id/chords_button"
-        android:layout_width="242dp"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/buttons_card"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:backgroundTint="#000"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="Chords"
-        android:textColor="#FFF" />
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        app:cardBackgroundColor="#99000000"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.6">
 
-    <Button
-        android:id="@+id/quit_button"
-        android:layout_width="242dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/chords_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#000"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="Quit"
-        android:textColor="#FFF" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-</RelativeLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/practice_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:text="Practice"
+                android:textSize="16sp"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_practice"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/chords_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:text="Chords Library"
+                android:textSize="16sp"
+                app:cornerRadius="8dp"
+                app:icon="@drawable/ic_library"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/profile_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:text="My Profile"
+                android:textSize="16sp"
+                app:cornerRadius="8dp"
+                app:backgroundTint="#3F51B5"
+                app:icon="@drawable/ic_profile"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/quit_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:text="Quit"
+                android:textSize="16sp"
+                app:cornerRadius="8dp"
+                app:backgroundTint="#D32F2F"
+                app:icon="@drawable/ic_exit"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/profile_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/profile_circle_bg"
+        android:padding="4dp"
+        android:src="@drawable/ic_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="Profile" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

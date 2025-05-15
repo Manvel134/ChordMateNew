@@ -1,15 +1,19 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme -->
     <style name="Base.Theme.ChordMate" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <item name="colorPrimary">@color/warm_primary</item>
-        <item name="colorPrimaryVariant">@color/warm_primaryDark</item>
-        <item name="colorOnPrimary">@color/warm_text</item>
-        <item name="android:statusBarColor">@color/warm_primaryDark</item>
-        <item name="android:navigationBarColor">@color/warm_background</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/background_color</item>
+        <item name="android:textColorPrimary">@color/text_color_primary</item>
+        <item name="android:textColorSecondary">@color/text_color_secondary</item>
     </style>
 
+    <!-- Our main theme extends the base theme -->
     <style name="Theme.ChordMate" parent="Base.Theme.ChordMate" />
+
+    <!-- Legacy reference for backward compatibility -->
+    <style name="AppTheme" parent="Theme.ChordMate" />
 </resources>

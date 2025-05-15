@@ -34,6 +34,11 @@
 
         <activity android:name="my.app.chordmate.MainActivity" />
         <activity android:name="my.app.chordmate.ChordsActivity" />
+
+        <activity
+            android:name="my.app.chordmate.ProfileActivity"
+            android:exported="false" />
+
         <activity
             android:name="my.app.chordmate.FullscreenChordActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />

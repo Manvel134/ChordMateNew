@@ -2,11 +2,13 @@ package my.app.chordmate;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.View;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chordmate.R;
+import com.google.android.material.button.MaterialButton;
 
 public class MainMenuActivity extends AppCompatActivity {
 
@@ -15,11 +17,14 @@ public class MainMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
 
-        Button practiceButton = findViewById(R.id.practice_button);
-        Button chordsButton = findViewById(R.id.chords_button);
-        Button quitButton = findViewById(R.id.quit_button);
+        // Initialize UI elements
+        MaterialButton practiceButton = findViewById(R.id.practice_button);
+        MaterialButton chordsButton = findViewById(R.id.chords_button);
+        MaterialButton profileButton = findViewById(R.id.profile_button);
+        MaterialButton quitButton = findViewById(R.id.quit_button);
+        ImageView profileIcon = findViewById(R.id.profile_icon);
 
-
+        // Set click listeners
         practiceButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
             startActivity(intent);
@@ -30,12 +35,19 @@ public class MainMenuActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        profileButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainMenuActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
 
+        profileIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(MainMenuActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
 
         quitButton.setOnClickListener(v -> {
             finishAffinity();
             System.exit(0);
         });
-
     }
 }
