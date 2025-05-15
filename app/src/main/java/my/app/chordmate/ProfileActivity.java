@@ -80,9 +80,6 @@ public class ProfileActivity extends AppCompatActivity {
             usernameText.setText(fallbackUsername);
         }
 
-        // Debug info - show current user information
-        Toast.makeText(this, "Auth UID: " + currentUser.getUid(), Toast.LENGTH_SHORT).show();
-
         // Load user data from Firebase
         loadUserData();
 
@@ -103,9 +100,6 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    Toast.makeText(ProfileActivity.this,
-                            "Data retrieved from Firebase",
-                            Toast.LENGTH_SHORT).show();
 
                     try {
                         // Try to get username directly first
