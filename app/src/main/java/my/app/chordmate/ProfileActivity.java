@@ -17,9 +17,7 @@ public class ProfileActivity extends AppCompatActivity {
     // These would typically come from your user authentication system
     private String username = "GuitarLover123";
     private String email = "guitarist@example.com";
-    private int practiceStreak = 7;
-    private int mastered = 12;
-    private String level = "Intermediate";
+    private int chordsAdded = 12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +32,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Initialize UI components
         TextView usernameText = findViewById(R.id.profile_username);
-        TextView streakText = findViewById(R.id.streak_value);
-        TextView masteredText = findViewById(R.id.mastered_value);
-        TextView levelText = findViewById(R.id.level_value);
+        TextView chordsAddedText = findViewById(R.id.chords_added_value);
 
         TextInputEditText emailInput = findViewById(R.id.email_input);
         TextInputEditText passwordInput = findViewById(R.id.password_input);
@@ -46,9 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Populate UI with user data
         usernameText.setText(username);
-        streakText.setText(String.valueOf(practiceStreak));
-        masteredText.setText(String.valueOf(mastered));
-        levelText.setText(level);
+        chordsAddedText.setText(String.valueOf(chordsAdded));
         emailInput.setText(email);
 
         // Set up button listeners
