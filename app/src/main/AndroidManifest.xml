@@ -39,6 +39,7 @@
             android:name="my.app.chordmate.ProfileActivity"
             android:exported="false" />
 
+
         <activity
             android:name="my.app.chordmate.FullscreenChordActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
@@ -46,6 +47,10 @@
         <activity
             android:name="my.app.chordmate.VerificationActivity"
             android:exported="false" />
+
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>

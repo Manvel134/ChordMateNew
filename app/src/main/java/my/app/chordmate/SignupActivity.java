@@ -185,6 +185,7 @@ public class SignupActivity extends AppCompatActivity {
 
         // Add with userId from Authentication as the key
         reference.child(userId).setValue(helperClass);
+
     }
 
     private void redirectToVerificationScreen() {
