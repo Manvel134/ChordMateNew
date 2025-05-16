@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Dark wooden background -->
+    <path
+        android:fillColor="#442211"
+        android:pathData="M0,0h100v100h-100z" />
+
+    <!-- Wood grain texture -->
+    <path
+        android:fillColor="#33180D"
+        android:pathData="M0,10C20,8 40,12 60,9C80,11 100,8 100,8V12C80,14 60,10 40,13C20,11 0,14 0,14V10Z" />
+    <path
+        android:fillColor="#33180D"
+        android:pathData="M0,30C20,28 40,32 60,29C80,31 100,28 100,28V32C80,34 60,30 40,33C20,31 0,34 0,34V30Z" />
+    <path
+        android:fillColor="#33180D"
+        android:pathData="M0,50C20,48 40,52 60,49C80,51 100,48 100,48V52C80,54 60,50 40,53C20,51 0,54 0,54V50Z" />
+    <path
+        android:fillColor="#33180D"
+        android:pathData="M0,70C20,68 40,72 60,69C80,71 100,68 100,68V72C80,74 60,70 40,73C20,71 0,74 0,74V70Z" />
+    <path
+        android:fillColor="#33180D"
+        android:pathData="M0,90C20,88 40,92 60,89C80,91 100,88 100,88V92C80,94 60,90 40,93C20,91 0,94 0,94V90Z" />
+
+    <!-- Guitar strings (6 strings) -->
+    <path
+        android:strokeColor="#CCCCCC"
+        android:strokeWidth="0.8"
+        android:strokeLineCap="round"
+        android:pathData="M0,15L100,15" />
+    <path
+        android:strokeColor="#CCCCCC"
+        android:strokeWidth="1.0"
+        android:strokeLineCap="round"
+        android:pathData="M0,30L100,30" />
+    <path
+        android:strokeColor="#CCCCCC"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:pathData="M0,45L100,45" />
+    <path
+        android:strokeColor="#CCCCCC"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:pathData="M0,60L100,60" />
+    <path
+        android:strokeColor="#CCCCCC"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round"
+        android:pathData="M0,75L100,75" />
+    <path
+        android:strokeColor="#CCCCCC"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round"
+        android:pathData="M0,90L100,90" />
+
+    <!-- Fret markers -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M25,50m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,50m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M75,50m-1,0a1,1 0,1 1,2 0a1,1 0,1 1,-2 0" />
+</vector>
