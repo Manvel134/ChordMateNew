@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.chordmate.R;
+import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 
@@ -24,7 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     TextView totalQuestionsTextView, questionTextView, currentQuestionTextView;
     ImageView chordImageView;
-    Button ansA, ansB, ansC, ansD, submitBtn, mainMenuBtn, playAudioBtn;
+    MaterialButton ansA, ansB, ansC, ansD, submitBtn, mainMenuBtn, playAudioBtn;
+    ProgressBar questionProgressBar;
     MediaPlayer mediaPlayer;
     ProgressDialog loadingDialog;
 
@@ -32,6 +35,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int totalQuestion = 0;
     int currentQuestionIndex = 0;
     String selectedAnswer = "";
+
+    // Original button colors for restoring after selection
+    private final int[] buttonColors = {
+            R.color.answer_button_a, // Purple - #673AB7
+            R.color.answer_button_b, // Indigo - #3F51B5
+            R.color.answer_button_c, // Blue - #2196F3
+            R.color.answer_button_d  // Cyan - #00BCD4
+    };
 
     private List<ChordQuestion> chordQuestions;
     private SupabaseManager supabaseManager;
@@ -44,12 +55,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Initialize Supabase Manager
         supabaseManager = SupabaseManager.getInstance(this);
 
+        // Find all views by ID
         totalQuestionsTextView = findViewById(R.id.total_question);
         currentQuestionTextView = findViewById(R.id.current_question);
         questionTextView = findViewById(R.id.question);
         chordImageView = findViewById(R.id.chord_image);
         playAudioBtn = findViewById(R.id.play_chord_audio_btn);
+        questionProgressBar = findViewById(R.id.question_progress);
 
+        // Buttons are now MaterialButtons
         ansA = findViewById(R.id.ans_A);
         ansB = findViewById(R.id.ans_B);
         ansC = findViewById(R.id.ans_C);
@@ -57,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         submitBtn = findViewById(R.id.submit_btn);
         mainMenuBtn = findViewById(R.id.main_menu_btn);
 
+        // Set click listeners
         ansA.setOnClickListener(this);
         ansB.setOnClickListener(this);
         ansC.setOnClickListener(this);
@@ -88,8 +103,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     loadingDialog.dismiss();
                     chordQuestions = questions;
                     totalQuestion = chordQuestions.size();
-                    totalQuestionsTextView.setText("Total questions: " + totalQuestion);
+                    totalQuestionsTextView.setText("Total Questions: " + totalQuestion);
                     updateQuestionNumber();
+                    updateProgressBar();
                     loadNewQuestion();
                 });
             }
@@ -148,16 +164,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    // Update progress bar based on current question
+    private void updateProgressBar() {
+        if (totalQuestion > 0) {
+            int progress = (currentQuestionIndex * 100) / totalQuestion;
+            questionProgressBar.setProgress(progress);
+        }
+    }
+
+    // Reset button colors to their original colors
+    private void resetButtonColors() {
+        ansA.setBackgroundColor(getResources().getColor(buttonColors[0]));
+        ansB.setBackgroundColor(getResources().getColor(buttonColors[1]));
+        ansC.setBackgroundColor(getResources().getColor(buttonColors[2]));
+        ansD.setBackgroundColor(getResources().getColor(buttonColors[3]));
+    }
+
     void loadNewQuestion() {
         if (currentQuestionIndex >= totalQuestion) {
             finishQuiz();
             return;
         }
 
-        ansA.setBackgroundColor(Color.BLACK);
-        ansB.setBackgroundColor(Color.BLACK);
-        ansC.setBackgroundColor(Color.BLACK);
-        ansD.setBackgroundColor(Color.BLACK);
+        // Reset button colors
+        resetButtonColors();
 
         ansA.setEnabled(true);
         ansB.setEnabled(true);
@@ -180,15 +210,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ansC.setText(choices[2]);
         ansD.setText(choices[3]);
 
+        // Update progress
+        updateProgressBar();
+
         // Preload the next question's media
         preloadNextQuestion();
     }
 
     @Override
     public void onClick(View view) {
-        Button clickedButton = (Button) view;
+        int id = view.getId();
 
-        if (clickedButton.getId() == R.id.submit_btn) {
+        if (id == R.id.submit_btn) {
             if (selectedAnswer.isEmpty()) {
                 new AlertDialog.Builder(this)
                         .setMessage("Please select an answer before submitting!")
@@ -199,11 +232,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             String correctAnswer = chordQuestions.get(currentQuestionIndex).getCorrectAnswer();
 
-            Button[] buttons = {ansA, ansB, ansC, ansD};
-            for (Button btn : buttons) {
+            MaterialButton[] buttons = {ansA, ansB, ansC, ansD};
+            for (MaterialButton btn : buttons) {
                 if (btn.getText().toString().equals(correctAnswer)) {
                     btn.setBackgroundColor(Color.GREEN);
-                } else if (btn.getText().toString().equals(selectedAnswer)) {
+                } else if (btn.getText().toString().equals(selectedAnswer) && !selectedAnswer.equals(correctAnswer)) {
                     btn.setBackgroundColor(Color.RED);
                 }
                 btn.setEnabled(false);
@@ -219,12 +252,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 loadNewQuestion();
             }, 2000);
         } else {
-            selectedAnswer = clickedButton.getText().toString();
-            ansA.setBackgroundColor(Color.BLACK);
-            ansB.setBackgroundColor(Color.BLACK);
-            ansC.setBackgroundColor(Color.BLACK);
-            ansD.setBackgroundColor(Color.BLACK);
-            clickedButton.setBackgroundColor(Color.GRAY);
+            // Answer button was clicked
+            selectedAnswer = ((MaterialButton) view).getText().toString();
+
+            // Reset all buttons to their original colors
+            resetButtonColors();
+
+            // Set clicked button to a highlighted color
+            ((MaterialButton) view).setBackgroundColor(Color.DKGRAY);
         }
     }
 

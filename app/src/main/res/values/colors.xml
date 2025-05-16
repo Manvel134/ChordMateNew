@@ -58,4 +58,16 @@
     <color name="text_color_secondary">#757575</color>
     <color name="red_logout">#D32F2F</color>
 
+
+    <color name="answer_button_a">#673AB7</color> <!-- Purple -->
+    <color name="answer_button_b">#3F51B5</color> <!-- Indigo -->
+    <color name="answer_button_c">#2196F3</color> <!-- Blue -->
+    <color name="answer_button_d">#00BCD4</color> <!-- Cyan -->
+
+    <color name="play_button">#3F51B5</color>
+    <color name="submit_button">#4CAF50</color>
+    <color name="home_button">#5D4037</color>
+    <color name="correct_answer">#4CAF50</color>
+    <color name="wrong_answer">#F44336</color>
+    <color name="selected_answer">#424242</color>
 </resources>
