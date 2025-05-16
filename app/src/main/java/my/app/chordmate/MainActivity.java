@@ -7,7 +7,7 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,9 +24,10 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    TextView totalQuestionsTextView, questionTextView, currentQuestionTextView;
+    TextView totalQuestionsTextView, questionTextView, currentQuestionTextView, scoreTextView;
     ImageView chordImageView;
-    MaterialButton ansA, ansB, ansC, ansD, submitBtn, mainMenuBtn, playAudioBtn;
+    ImageButton backButton;
+    MaterialButton ansA, ansB, ansC, ansD, submitBtn, playAudioBtn;
     ProgressBar questionProgressBar;
     MediaPlayer mediaPlayer;
     ProgressDialog loadingDialog;
@@ -58,10 +59,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Find all views by ID
         totalQuestionsTextView = findViewById(R.id.total_question);
         currentQuestionTextView = findViewById(R.id.current_question);
+        scoreTextView = findViewById(R.id.score_text);
         questionTextView = findViewById(R.id.question);
         chordImageView = findViewById(R.id.chord_image);
         playAudioBtn = findViewById(R.id.play_chord_audio_btn);
         questionProgressBar = findViewById(R.id.question_progress);
+        backButton = findViewById(R.id.back_button);
 
         // Buttons are now MaterialButtons
         ansA = findViewById(R.id.ans_A);
@@ -69,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ansC = findViewById(R.id.ans_C);
         ansD = findViewById(R.id.ans_D);
         submitBtn = findViewById(R.id.submit_btn);
-        mainMenuBtn = findViewById(R.id.main_menu_btn);
 
         // Set click listeners
         ansA.setOnClickListener(this);
@@ -78,12 +80,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ansD.setOnClickListener(this);
         submitBtn.setOnClickListener(this);
         playAudioBtn.setOnClickListener(v -> playChordAudio());
+        backButton.setOnClickListener(v -> showExitConfirmation());
 
-        mainMenuBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MainMenuActivity.class);
-            startActivity(intent);
-            finish();
-        });
+        // Initialize score text
+        updateScoreText();
 
         // Show loading dialog
         loadingDialog = new ProgressDialog(this);
@@ -93,6 +93,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Load data from Supabase
         loadChordData();
+    }
+
+    private void showExitConfirmation() {
+        new AlertDialog.Builder(this)
+                .setTitle("Exit Quiz")
+                .setMessage("Are you sure you want to return to the main menu?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    Intent intent = new Intent(MainActivity.this, MainMenuActivity.class);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void updateScoreText() {
+        scoreTextView.setText("Score: " + score);
     }
 
     private void loadChordData() {
@@ -244,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             if (selectedAnswer.equals(correctAnswer)) {
                 score++;
+                updateScoreText();
             }
 
             new android.os.Handler().postDelayed(() -> {
@@ -331,11 +349,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     void restartQuiz() {
         score = 0;
         currentQuestionIndex = 0;
+        updateScoreText();
         updateQuestionNumber();
         loadNewQuestion();
     }
 
     private void updateQuestionNumber() {
-        currentQuestionTextView.setText("Question: " + (currentQuestionIndex + 1));
+        currentQuestionTextView.setText("Question: " + (currentQuestionIndex + 1) + "/" + totalQuestion);
+    }
+
+    @Override
+    public void onBackPressed() {
+        showExitConfirmation();
     }
 }
