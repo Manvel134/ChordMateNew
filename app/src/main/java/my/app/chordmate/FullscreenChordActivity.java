@@ -2,7 +2,6 @@ package my.app.chordmate;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -10,6 +9,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chordmate.R;
+import com.google.android.material.button.MaterialButton;
 
 public class FullscreenChordActivity extends AppCompatActivity {
     private AudioPlayer audioPlayer;
@@ -22,20 +22,27 @@ public class FullscreenChordActivity extends AppCompatActivity {
 
         ImageView chordImage = findViewById(R.id.fullscreen_chord_image);
         TextView chordNameTextView = findViewById(R.id.chord_name);
+        TextView chordDescriptionTextView = findViewById(R.id.chord_description);
         ImageButton backButton = findViewById(R.id.back_button);
-        Button playAudioButton = findViewById(R.id.play_chord_audio_btn);
+        MaterialButton playAudioButton = findViewById(R.id.play_chord_audio_btn);
 
         int imageResId = getIntent().getIntExtra("chord_image", R.drawable.default_image);
         currentChordName = getIntent().getStringExtra("chord_name");
+        String chordDescription = getIntent().getStringExtra("chord_description");
 
         if (currentChordName == null) {
             currentChordName = "";
+        }
+
+        if (chordDescription == null) {
+            chordDescription = "No description available for this chord.";
         }
 
         Log.d("FullscreenChordActivity", "Chord Name: " + currentChordName);
 
         chordImage.setImageResource(imageResId);
         chordNameTextView.setText(currentChordName);
+        chordDescriptionTextView.setText(chordDescription);
 
         audioPlayer = new AudioPlayer(this);
 
@@ -93,7 +100,6 @@ public class FullscreenChordActivity extends AppCompatActivity {
                 return 0;
         }
     }
-
 
     @Override
     protected void onDestroy() {

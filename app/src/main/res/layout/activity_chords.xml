@@ -1,20 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#FFC18C"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/guitar_strings_bg"
+    tools:context="my.app.chordmate.ChordsActivity">
 
+    <!-- Semi-transparent overlay -->
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000" />
+
+    <!-- Header with back button -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#CC000000"
+        android:elevation="4dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="Chord Library"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- Main Content -->
     <ScrollView
         android:id="@+id/scrollView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="16dp"
-        android:background="#FFC18C"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/back_to_menu_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_action_bar"
+        android:layout_below="@+id/toolbar"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:padding="16dp">
 
         <GridLayout
             android:layout_width="match_parent"
@@ -33,27 +65,29 @@
                 android:layout_columnWeight="1"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                android:background="#FFFFFF">
+                app:cardBackgroundColor="#CCFFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="8dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:src="@drawable/am_chord" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginTop="8dp"
                         android:text="Am"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="#333333"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -67,27 +101,29 @@
                 android:layout_columnWeight="1"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                android:background="#FFFFFF">
+                app:cardBackgroundColor="#CCFFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="8dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:src="@drawable/em_chord" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginTop="8dp"
                         android:text="Em"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="#333333"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -101,27 +137,29 @@
                 android:layout_columnWeight="1"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                android:background="#FFFFFF">
+                app:cardBackgroundColor="#CCFFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="8dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:src="@drawable/d_chord" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginTop="8dp"
                         android:text="D"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="#333333"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -135,27 +173,29 @@
                 android:layout_columnWeight="1"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                android:background="#FFFFFF">
+                app:cardBackgroundColor="#CCFFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="8dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:src="@drawable/dm_chord" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginTop="8dp"
                         android:text="Dm"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="#333333"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -169,27 +209,29 @@
                 android:layout_columnWeight="1"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                android:background="#FFFFFF">
+                app:cardBackgroundColor="#CCFFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="8dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:src="@drawable/e_chord" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginTop="8dp"
                         android:text="E"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="#333333"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -203,27 +245,29 @@
                 android:layout_columnWeight="1"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="4dp"
-                android:background="#FFFFFF">
+                app:cardBackgroundColor="#CCFFFFFF">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:padding="8dp">
+                    android:padding="16dp">
 
                     <ImageView
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:src="@drawable/g_chord" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginTop="8dp"
                         android:text="G"
                         android:textAlignment="center"
-                        android:textColor="@android:color/black"
+                        android:textColor="#333333"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -231,15 +275,26 @@
         </GridLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/back_to_menu_button"
-        android:layout_width="0dp"
+    <!-- Fixed Back button at bottom -->
+    <LinearLayout
+        android:id="@+id/bottom_action_bar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:backgroundTint="#000"
-        android:text="Back to Main Menu"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_alignParentBottom="true"
+        android:background="#CC000000"
+        android:elevation="8dp"
+        android:padding="12dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/back_to_menu_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#4CAF50"
+            android:padding="12dp"
+            android:text="Back to Main Menu"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            app:cornerRadius="8dp" />
+    </LinearLayout>
+</RelativeLayout>

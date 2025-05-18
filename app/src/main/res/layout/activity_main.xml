@@ -35,16 +35,18 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Back to Main Menu"
                 android:src="@drawable/ic_arrow_back"
-                android:tint="#FFFFFF" />
+                app:tint="#FFFFFF" />
 
+            <!-- TextView removed for now - will be used later for difficulty level -->
             <TextView
+                android:id="@+id/quiz_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="ChordMate Quiz"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 

@@ -49,7 +49,9 @@ public class SupabaseManager {
     private final Map<String, MediaPlayer> mediaPlayerCache = new HashMap<>();
 
     private List<ChordQuestion> chordQuestions = new ArrayList<>();
+    private List<ChordItem> chordLibrary = new ArrayList<>();
     private boolean isDataLoaded = false;
+    private boolean isChordLibraryLoaded = false;
     private boolean isPreloadingMedia = false;
 
     private SupabaseManager(Context context) {
@@ -63,6 +65,124 @@ public class SupabaseManager {
         }
         return instance;
     }
+
+    public void loadChordLibrary(final ChordLibraryCallback callback) {
+        if (isChordLibraryLoaded && !chordLibrary.isEmpty()) {
+            callback.onDataLoaded(chordLibrary);
+            return;
+        }
+
+        executorService.execute(() -> {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                URL url = new URL(SUPABASE_URL + "/rest/v1/chord_library?select=*");
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("apikey", SUPABASE_API_KEY);
+                connection.setRequestProperty("Authorization", "Bearer " + SUPABASE_API_KEY);
+                connection.setConnectTimeout(5000); // 5 second timeout
+                connection.setReadTimeout(10000); // 10 second read timeout
+
+                int responseCode = connection.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    String jsonResponse = response.toString();
+
+                    // Parse JSON data
+                    JSONArray jsonArray = new JSONArray(jsonResponse);
+                    chordLibrary.clear();
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String name = jsonObject.getString("name");
+                        String description = jsonObject.getString("description");
+                        String imageUrl = jsonObject.getString("image_url");
+                        String audioUrl = jsonObject.getString("audio_url");
+
+                        ChordItem chord = new ChordItem(
+                                name, description, imageUrl, audioUrl
+                        );
+                        chordLibrary.add(chord);
+                    }
+
+                    isChordLibraryLoaded = true;
+                    callback.onDataLoaded(chordLibrary);
+
+                    // Start preloading media in background after data is loaded
+                    preloadChordLibraryMedia();
+
+                } else {
+                    String errorMsg = "Server error: " + responseCode;
+                    Log.e(TAG, errorMsg);
+                    callback.onError(errorMsg);
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading chord library", e);
+                callback.onError("Error: " + e.getMessage());
+            } finally {
+                // Clean up resources
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error closing reader", e);
+                    }
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+        });
+    }
+
+    private void preloadChordLibraryMedia() {
+        if (isPreloadingMedia || chordLibrary.isEmpty()) {
+            return;
+        }
+
+        isPreloadingMedia = true;
+
+        executorService.execute(() -> {
+            try {
+                // First, preload all chord images to Glide's cache
+                for (ChordItem chord : chordLibrary) {
+                    String imageUrl = getFullStorageUrl(chord.getImageUrl());
+
+                    // Preload image to Glide's cache
+                    Glide.with(context)
+                            .load(imageUrl)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .preload();
+                }
+
+                // Then preload and cache audio files
+                for (ChordItem chord : chordLibrary) {
+                    String audioUrl = chord.getAudioUrl();
+                    preloadAudioFile(audioUrl);
+                }
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error preloading chord library media", e);
+            } finally {
+                isPreloadingMedia = false;
+            }
+        });
+    }
+
+    // Existing methods
 
     public void loadChordData(final DataLoadCallback callback) {
         if (isDataLoaded && !chordQuestions.isEmpty()) {
@@ -371,6 +491,11 @@ public class SupabaseManager {
 
     public interface DataLoadCallback {
         void onDataLoaded(List<ChordQuestion> questions);
+        void onError(String errorMessage);
+    }
+
+    public interface ChordLibraryCallback {
+        void onDataLoaded(List<ChordItem> chords);
         void onError(String errorMessage);
     }
 
