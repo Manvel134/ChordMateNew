@@ -1,6 +1,7 @@
 package my.app.chordmate;
 
 
+
 public class ChordItem {
     private String name;
     private String description;
