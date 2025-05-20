@@ -1,8 +1,6 @@
 package my.app.chordmate;
 
-/**
- * Represents a guitar chord with all its details
- */
+
 public class ChordItem {
     private String name;
     private String description;
