@@ -49,13 +49,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
-                        <ImageView
+                        <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/profile_image"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
-                            android:background="@drawable/circular_background"
                             android:padding="2dp"
                             android:src="@drawable/default_profile_image"
+                            app:shapeAppearanceOverlay="@style/CircularImageView"
+                            app:strokeColor="@color/colorPrimary"
+                            app:strokeWidth="2dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
