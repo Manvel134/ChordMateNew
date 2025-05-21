@@ -48,6 +48,11 @@
                 android:name="my.app.chordmate.VerificationActivity"
                 android:exported="false" />
 
+            <activity
+                android:name="my.app.chordmate.MyChordsActivity"
+                android:exported="false"
+                android:theme="@style/Theme.Material3.Light.NoActionBar"/>
+
         </application>
 
         <uses-permission android:name="android.permission.INTERNET" />
