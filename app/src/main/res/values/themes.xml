@@ -21,4 +21,12 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+
+    <style name="Theme.ChordMate.Fullscreen" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Inherit from your main theme and customize as needed -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!-- Additional customizations -->
+    </style>
 </resources>

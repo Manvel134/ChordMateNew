@@ -37,12 +37,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int currentQuestionIndex = 0;
     String selectedAnswer = "";
 
-    // Original button colors for restoring after selection
     private final int[] buttonColors = {
-            R.color.answer_button_a, // Purple - #673AB7
-            R.color.answer_button_b, // Indigo - #3F51B5
-            R.color.answer_button_c, // Blue - #2196F3
-            R.color.answer_button_d  // Cyan - #00BCD4
+            R.color.answer_button_a,
+            R.color.answer_button_a,
+            R.color.answer_button_a,
+            R.color.answer_button_a
     };
 
     private List<ChordQuestion> chordQuestions;
