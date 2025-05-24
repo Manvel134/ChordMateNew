@@ -25,7 +25,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
         // Set click listeners
         practiceButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
+            // Fixed: Navigate to DifficultySelection instead of MainActivity
+            Intent intent = new Intent(MainMenuActivity.this, DifficultySelection.class);
             startActivity(intent);
         });
 

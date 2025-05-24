@@ -44,8 +44,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             R.color.answer_button_a
     };
 
-    private List<ChordQuestion> chordQuestions;
+    // Support both local QuestionAnswer data and Supabase data
+    private List<ChordQuestion> chordQuestions; // For Supabase data
+    private List<QuestionAnswer.QuizQuestion> quizQuestions; // For local data
     private SupabaseManager supabaseManager;
+
+    // Quiz configuration
+    private boolean useLocalData = false;
+    private String quizType = "";
+    private QuestionAnswer.DifficultyLevel difficultyLevel = null;
+    private int questionCount = 15;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +62,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // Initialize Supabase Manager
         supabaseManager = SupabaseManager.getInstance(this);
+
+        // Get intent extras for quiz configuration
+        Intent intent = getIntent();
+        quizType = intent.getStringExtra("quiz_type");
+        questionCount = intent.getIntExtra("question_count", 15);
+
+        String difficultyString = intent.getStringExtra("difficulty_level");
+        if (difficultyString != null) {
+            try {
+                difficultyLevel = QuestionAnswer.DifficultyLevel.valueOf(difficultyString);
+            } catch (IllegalArgumentException e) {
+                difficultyLevel = QuestionAnswer.DifficultyLevel.BEGINNER;
+            }
+        }
 
         // Find all views by ID
         totalQuestionsTextView = findViewById(R.id.total_question);
@@ -84,14 +106,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Initialize score text
         updateScoreText();
 
-        // Show loading dialog
-        loadingDialog = new ProgressDialog(this);
-        loadingDialog.setMessage("Loading chord data...");
-        loadingDialog.setCancelable(false);
-        loadingDialog.show();
+        // Determine data source and load questions
+        if (quizType != null && !quizType.isEmpty()) {
+            // Use local QuestionAnswer data
+            useLocalData = true;
+            loadLocalQuestionData();
+        } else {
+            // Use Supabase data (original behavior)
+            useLocalData = false;
+            // Show loading dialog
+            loadingDialog = new ProgressDialog(this);
+            loadingDialog.setMessage("Loading chord data...");
+            loadingDialog.setCancelable(false);
+            loadingDialog.show();
+            loadChordData();
+        }
+    }
 
-        // Load data from Supabase
-        loadChordData();
+    private void loadLocalQuestionData() {
+        try {
+            if ("mixed".equals(quizType)) {
+                quizQuestions = QuestionAnswer.getMixedQuestions(questionCount);
+            } else if ("difficulty".equals(quizType) && difficultyLevel != null) {
+                quizQuestions = QuestionAnswer.getQuestionsByDifficulty(difficultyLevel);
+            } else {
+                // Fallback to beginner questions
+                quizQuestions = QuestionAnswer.getQuestionsByDifficulty(QuestionAnswer.DifficultyLevel.BEGINNER);
+            }
+
+            totalQuestion = quizQuestions.size();
+            totalQuestionsTextView.setText("Total Questions: " + totalQuestion);
+            updateQuestionNumber();
+            updateProgressBar();
+            loadNewQuestion();
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error loading questions: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
     private void showExitConfirmation() {
@@ -163,12 +215,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         // Clean up the SupabaseManager resources
-        supabaseManager.cleanup();
+        if (supabaseManager != null) {
+            supabaseManager.cleanup();
+        }
     }
 
-    // Add this method to preload the next question's media
+    // Add this method to preload the next question's media (for Supabase data only)
     private void preloadNextQuestion() {
-        if (currentQuestionIndex + 1 < totalQuestion) {
+        if (!useLocalData && currentQuestionIndex + 1 < totalQuestion) {
             ChordQuestion nextQuestion = chordQuestions.get(currentQuestionIndex + 1);
 
             // Preload the next question's image into Glide's cache
@@ -213,24 +267,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         selectedAnswer = "";
         submitBtn.setText("Submit");
 
-        ChordQuestion currentQuestion = chordQuestions.get(currentQuestionIndex);
-        questionTextView.setText(currentQuestion.getQuestion());
+        if (useLocalData) {
+            // Load from local QuestionAnswer data
+            QuestionAnswer.QuizQuestion currentQuestion = quizQuestions.get(currentQuestionIndex);
+            questionTextView.setText(currentQuestion.getQuestion());
 
-        // Load image from Supabase
-        supabaseManager.loadImageIntoView(currentQuestion.getImageUrl(), chordImageView);
+            // Load image from resources
+            chordImageView.setImageResource(currentQuestion.getImageResourceId());
 
-        // Set answer choices
-        String[] choices = currentQuestion.getChoices();
-        ansA.setText(choices[0]);
-        ansB.setText(choices[1]);
-        ansC.setText(choices[2]);
-        ansD.setText(choices[3]);
+            // Set answer choices
+            String[] choices = currentQuestion.getChoices();
+            ansA.setText(choices[0]);
+            ansB.setText(choices[1]);
+            ansC.setText(choices[2]);
+            ansD.setText(choices[3]);
+        } else {
+            // Load from Supabase data (original behavior)
+            ChordQuestion currentQuestion = chordQuestions.get(currentQuestionIndex);
+            questionTextView.setText(currentQuestion.getQuestion());
+
+            // Load image from Supabase
+            supabaseManager.loadImageIntoView(currentQuestion.getImageUrl(), chordImageView);
+
+            // Set answer choices
+            String[] choices = currentQuestion.getChoices();
+            ansA.setText(choices[0]);
+            ansB.setText(choices[1]);
+            ansC.setText(choices[2]);
+            ansD.setText(choices[3]);
+
+            // Preload the next question's media
+            preloadNextQuestion();
+        }
 
         // Update progress
         updateProgressBar();
-
-        // Preload the next question's media
-        preloadNextQuestion();
     }
 
     @Override
@@ -246,7 +317,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return;
             }
 
-            String correctAnswer = chordQuestions.get(currentQuestionIndex).getCorrectAnswer();
+            String correctAnswer;
+            if (useLocalData) {
+                correctAnswer = quizQuestions.get(currentQuestionIndex).getCorrectAnswer();
+            } else {
+                correctAnswer = chordQuestions.get(currentQuestionIndex).getCorrectAnswer();
+            }
 
             MaterialButton[] buttons = {ansA, ansB, ansC, ansD};
             for (MaterialButton btn : buttons) {
@@ -265,7 +341,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             new android.os.Handler().postDelayed(() -> {
                 currentQuestionIndex++;
-                updateQuestionNumber();
+                // Only update question number if we haven't finished the quiz
+                if (currentQuestionIndex < totalQuestion) {
+                    updateQuestionNumber();
+                }
                 loadNewQuestion();
             }, 2000);
         } else {
@@ -290,23 +369,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
-        final String audioUrl = chordQuestions.get(currentQuestionIndex).getAudioUrl();
-        if (audioUrl == null || audioUrl.isEmpty()) {
-            new AlertDialog.Builder(this)
-                    .setMessage("Audio resource not found!")
-                    .setPositiveButton("OK", null)
-                    .show();
-            return;
-        }
+        if (useLocalData) {
+            // Play audio from local resources
+            QuestionAnswer.QuizQuestion currentQuestion = quizQuestions.get(currentQuestionIndex);
+            int audioResourceId = currentQuestion.getAudioResourceId();
 
-        // Show loading while preparing audio
-        Toast.makeText(this, "Loading audio...", Toast.LENGTH_SHORT).show();
-
-        supabaseManager.prepareAudioPlayer(audioUrl, new SupabaseManager.AudioPreparedCallback() {
-            @Override
-            public void onAudioPrepared(MediaPlayer preparedPlayer) {
-                runOnUiThread(() -> {
-                    mediaPlayer = preparedPlayer;
+            try {
+                mediaPlayer = MediaPlayer.create(this, audioResourceId);
+                if (mediaPlayer != null) {
                     mediaPlayer.setOnCompletionListener(mp -> {
                         if (mediaPlayer != null) {
                             mediaPlayer.release();
@@ -314,19 +384,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     });
                     mediaPlayer.start();
-                });
+                } else {
+                    Toast.makeText(this, "Audio resource not found!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "Error playing audio: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Play audio from Supabase (original behavior)
+            final String audioUrl = chordQuestions.get(currentQuestionIndex).getAudioUrl();
+            if (audioUrl == null || audioUrl.isEmpty()) {
+                new AlertDialog.Builder(this)
+                        .setMessage("Audio resource not found!")
+                        .setPositiveButton("OK", null)
+                        .show();
+                return;
             }
 
-            @Override
-            public void onError(String errorMessage) {
-                runOnUiThread(() -> {
-                    new AlertDialog.Builder(MainActivity.this)
-                            .setMessage("Error loading audio: " + errorMessage)
-                            .setPositiveButton("OK", null)
-                            .show();
-                });
-            }
-        });
+            // Show loading while preparing audio
+            Toast.makeText(this, "Loading audio...", Toast.LENGTH_SHORT).show();
+
+            supabaseManager.prepareAudioPlayer(audioUrl, new SupabaseManager.AudioPreparedCallback() {
+                @Override
+                public void onAudioPrepared(MediaPlayer preparedPlayer) {
+                    runOnUiThread(() -> {
+                        mediaPlayer = preparedPlayer;
+                        mediaPlayer.setOnCompletionListener(mp -> {
+                            if (mediaPlayer != null) {
+                                mediaPlayer.release();
+                                mediaPlayer = null;
+                            }
+                        });
+                        mediaPlayer.start();
+                    });
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    runOnUiThread(() -> {
+                        new AlertDialog.Builder(MainActivity.this)
+                                .setMessage("Error loading audio: " + errorMessage)
+                                .setPositiveButton("OK", null)
+                                .show();
+                    });
+                }
+            });
+        }
     }
 
     void finishQuiz() {
@@ -350,11 +453,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         currentQuestionIndex = 0;
         updateScoreText();
         updateQuestionNumber();
-        loadNewQuestion();
+
+        // Reshuffle questions if using local data
+        if (useLocalData) {
+            loadLocalQuestionData();
+        } else {
+            loadNewQuestion();
+        }
     }
 
     private void updateQuestionNumber() {
-        currentQuestionTextView.setText("Question: " + (currentQuestionIndex + 1) + "/" + totalQuestion);
+        // Ensure we don't exceed the total number of questions
+        int displayQuestionNumber = Math.min(currentQuestionIndex + 1, totalQuestion);
+        currentQuestionTextView.setText("Question: " + displayQuestionNumber + "/" + totalQuestion);
     }
 
     @Override
