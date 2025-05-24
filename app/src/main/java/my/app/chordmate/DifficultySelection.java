@@ -38,7 +38,7 @@ public class DifficultySelection extends AppCompatActivity {
         expertDesc = findViewById(R.id.expert_description);
         mixedDesc = findViewById(R.id.mixed_description);
 
-        findViewById(R.id.back_button).setOnClickListener(v -> finish());
+        findViewById(R.id.back_button).setOnClickListener(v -> goToMainMenu());
     }
 
     private void setupDescriptions() {
@@ -69,5 +69,16 @@ public class DifficultySelection extends AppCompatActivity {
         intent.putExtra("quiz_type", "mixed");
         intent.putExtra("question_count", 15);
         startActivity(intent);
+    }
+
+    private void goToMainMenu() {
+        Intent intent = new Intent(DifficultySelection.this, MainMenuActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        goToMainMenu();
     }
 }

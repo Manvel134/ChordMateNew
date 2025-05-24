@@ -149,14 +149,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void showExitConfirmation() {
         new AlertDialog.Builder(this)
                 .setTitle("Exit Quiz")
-                .setMessage("Are you sure you want to return to the main menu?")
+                .setMessage("Are you sure you want to return to difficulty selection?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    Intent intent = new Intent(MainActivity.this, MainMenuActivity.class);
-                    startActivity(intent);
+                    // Check if we came from difficulty selection
+                    if (isFromDifficultySelection()) {
+                        // Go back to difficulty selection
+                        Intent intent = new Intent(MainActivity.this, DifficultySelection.class);
+                        startActivity(intent);
+                    } else {
+                        // Go back to main menu (for Supabase data or other sources)
+                        Intent intent = new Intent(MainActivity.this, MainMenuActivity.class);
+                        startActivity(intent);
+                    }
                     finish();
                 })
                 .setNegativeButton("No", null)
                 .show();
+    }
+
+    private boolean isFromDifficultySelection() {
+        // If we have local data (quiz_type is set), it means we came from difficulty selection
+        return useLocalData && (quizType != null && !quizType.isEmpty());
     }
 
     private void updateScoreText() {
@@ -439,9 +452,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setTitle(passStatus)
                 .setMessage("Score is " + score + " out of " + totalQuestion)
                 .setPositiveButton("Restart", (dialogInterface, i) -> restartQuiz())
-                .setNegativeButton("Main Menu", (dialogInterface, i) -> {
-                    Intent intent = new Intent(MainActivity.this, MainMenuActivity.class);
-                    startActivity(intent);
+                .setNegativeButton("Back to Selection", (dialogInterface, i) -> {
+                    // Check where to go back to
+                    if (isFromDifficultySelection()) {
+                        // Go back to difficulty selection
+                        Intent intent = new Intent(MainActivity.this, DifficultySelection.class);
+                        startActivity(intent);
+                    } else {
+                        // Go back to main menu (for Supabase data or other sources)
+                        Intent intent = new Intent(MainActivity.this, MainMenuActivity.class);
+                        startActivity(intent);
+                    }
                     finish();
                 })
                 .setCancelable(false)
