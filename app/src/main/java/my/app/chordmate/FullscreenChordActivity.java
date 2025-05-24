@@ -71,10 +71,37 @@ public class FullscreenChordActivity extends AppCompatActivity {
             case "a minor":
                 return R.raw.am_audio;
 
+            case "bb":
+            case "b flat major (bb)":
+            case "b flat major":
+            case "b flat":
+                return R.raw.bb_audio;
+
+            case "bm":
+            case "b minor (bm)":
+            case "b minor":
+                return R.raw.bm_audio;
+
+            case "c":
+            case "c major (c)":
+            case "c major":
+                return R.raw.c_audio;
+
             case "d major (d)":
             case "d major":
             case "d":
                 return R.raw.d_audio;
+
+            case "d7":
+            case "d dominant 7th (d7)":
+            case "d dominant 7th":
+            case "d seventh":
+                return R.raw.d7_audio;
+
+            case "dm":
+            case "d minor":
+            case "d minor (dm)":
+                return R.raw.dm_audio;
 
             case "e major (e)":
             case "e major":
@@ -86,15 +113,26 @@ public class FullscreenChordActivity extends AppCompatActivity {
             case "e minor":
                 return R.raw.em_audio;
 
+            case "f":
+            case "f major (f)":
+            case "f major":
+                return R.raw.f_audio;
+
             case "g major (g)":
             case "g major":
             case "g":
                 return R.raw.g_audio;
 
-            case "dm":
-            case "d minor":
-            case "d minor (dm)":
-                return R.raw.dm_audio;
+            case "a":
+            case "a major":
+            case "a major (a)":
+                return R.raw.a_audio;
+
+            case "b7":
+            case "b7 major":
+            case "b7 major (b7)":
+                return R.raw.b7_audio;
+
             default:
                 Log.e("FullscreenChordActivity", "Unknown chord: " + chordName);
                 return 0;
