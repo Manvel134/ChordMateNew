@@ -2,20 +2,19 @@ package my.app.chordmate;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-
+import android.widget.GridLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-
 import com.example.chordmate.R;
 
 public class ChordsActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chords);
 
-        // Basic Major Chords
+        // Setup predefined chords
         setupChordCard(R.id.a_card, R.drawable.a_chord, "A Major (A)", "A major contains A, C#, and E notes. It's a bright, happy chord that's essential in many genres including rock, country, and folk music.");
         setupChordCard(R.id.bb_card, R.drawable.bb_chord, "B Flat Major (Bb)", "B flat major contains Bb, D, and F notes. It's a warm, rich chord commonly used in jazz, blues, and many pop songs.");
         setupChordCard(R.id.c_card, R.drawable.c_chord, "C Major (C)", "C major contains C, E, and G notes. Often called the 'natural' chord, it's one of the first chords beginners learn and forms the foundation of many songs.");
@@ -50,21 +49,19 @@ public class ChordsActivity extends AppCompatActivity {
         setupChordCard(R.id.esus4_card, R.drawable.esus4_chord, "E Suspended 4th (Esus4)", "Esus4 contains E, A, and B notes. This suspended chord creates tension and anticipation, often used before resolving to E major for dramatic effect.");
         setupChordCard(R.id.g6_card, R.drawable.g6_chord, "G Major 6th (G6)", "G6 contains G, B, D, and E notes. This bright, cheerful chord is perfect for ending songs or adding a folk-country flavor to progressions.");
 
+
         findViewById(R.id.back_to_menu_button).setOnClickListener(v -> finish());
     }
 
     private void setupChordCard(int cardId, int imageResId, String chordName, String chordDescription) {
         CardView chordCard = findViewById(cardId);
         if (chordCard != null) {
-            chordCard.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(ChordsActivity.this, FullscreenChordActivity.class);
-                    intent.putExtra("chord_image", imageResId);
-                    intent.putExtra("chord_name", chordName);
-                    intent.putExtra("chord_description", chordDescription);
-                    startActivity(intent);
-                }
+            chordCard.setOnClickListener(v -> {
+                Intent intent = new Intent(ChordsActivity.this, FullscreenChordActivity.class);
+                intent.putExtra("chord_image", imageResId);
+                intent.putExtra("chord_name", chordName);
+                intent.putExtra("chord_description", chordDescription);
+                startActivity(intent);
             });
         }
     }

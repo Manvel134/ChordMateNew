@@ -21,11 +21,9 @@
         android:layout_height="?attr/actionBarSize"
         android:background="#CC000000"
         android:elevation="4dp">
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,11 +45,9 @@
         android:clipToPadding="false"
         android:fillViewport="true"
         android:padding="16dp">
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
             <!-- Empty state container -->
             <LinearLayout
                 android:id="@+id/empty_state_container"
@@ -61,14 +57,12 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="visible">
-
                 <ImageView
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:src="@drawable/ic_library"
                     android:alpha="0.6"
                     android:tint="#FFFFFF" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -77,7 +71,6 @@
                     android:textColor="#FFFFFF"
                     android:textSize="24sp"
                     android:textStyle="bold" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -86,24 +79,7 @@
                     android:text="Save your favorite chords here for quick access"
                     android:textColor="#E0E0E0"
                     android:textSize="16sp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/add_chord_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:backgroundTint="#4CAF50"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:text="Add Your First Chord"
-                    android:textAllCaps="false"
-                    android:textColor="#FFFFFF"
-                    app:cornerRadius="8dp"
-                    app:icon="@drawable/ic_my_chords"
-                    app:iconGravity="textStart"
-                    app:iconPadding="8dp" />
             </LinearLayout>
-
             <!-- Grid layout for chords (initially hidden) -->
             <GridLayout
                 android:id="@+id/chords_grid"
@@ -114,14 +90,12 @@
                 android:alignmentMode="alignMargins"
                 android:useDefaultMargins="true"
                 android:visibility="gone">
-
                 <!-- Chord cards will be added here dynamically -->
-
             </GridLayout>
         </RelativeLayout>
     </ScrollView>
 
-    <!-- Fixed Back button at bottom -->
+    <!-- Fixed Bottom Action Bar -->
     <LinearLayout
         android:id="@+id/bottom_action_bar"
         android:layout_width="match_parent"
@@ -129,12 +103,29 @@
         android:layout_alignParentBottom="true"
         android:background="#CC000000"
         android:elevation="8dp"
-        android:padding="12dp">
-
+        android:padding="12dp"
+        android:orientation="horizontal">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/add_chord_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#4CAF50"
+            android:padding="12dp"
+            android:text="Add Chord"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            app:cornerRadius="8dp"
+            app:icon="@drawable/ic_my_chords"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/back_to_menu_button"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:backgroundTint="#4CAF50"
             android:padding="12dp"
             android:text="Back to Main Menu"

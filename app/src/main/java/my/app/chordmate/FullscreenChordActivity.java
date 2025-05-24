@@ -1,15 +1,15 @@
 package my.app.chordmate;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.chordmate.R;
 import com.google.android.material.button.MaterialButton;
+import java.io.File;
 
 public class FullscreenChordActivity extends AppCompatActivity {
     private AudioPlayer audioPlayer;
@@ -26,7 +26,9 @@ public class FullscreenChordActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.back_button);
         MaterialButton playAudioButton = findViewById(R.id.play_chord_audio_btn);
 
-        int imageResId = getIntent().getIntExtra("chord_image", R.drawable.default_image);
+        int imageResId = getIntent().getIntExtra("chord_image", 0);
+        String imagePath = getIntent().getStringExtra("chord_image_path");
+        String audioPath = getIntent().getStringExtra("chord_audio_path");
         currentChordName = getIntent().getStringExtra("chord_name");
         String chordDescription = getIntent().getStringExtra("chord_description");
 
@@ -38,15 +40,28 @@ public class FullscreenChordActivity extends AppCompatActivity {
             chordDescription = "No description available for this chord.";
         }
 
-        Log.d("FullscreenChordActivity", "Chord Name: " + currentChordName);
+        // Set image
+        if (imagePath != null) {
+            chordImage.setImageURI(Uri.fromFile(new File(imagePath)));
+        } else if (imageResId != 0) {
+            chordImage.setImageResource(imageResId);
+        } else {
+            chordImage.setImageResource(R.drawable.default_image);
+        }
 
-        chordImage.setImageResource(imageResId);
         chordNameTextView.setText(currentChordName);
         chordDescriptionTextView.setText(chordDescription);
 
         audioPlayer = new AudioPlayer(this);
 
-        playAudioButton.setOnClickListener(v -> playCurrentChordAudio());
+        playAudioButton.setOnClickListener(v -> {
+            if (audioPath != null) {
+                audioPlayer.playAudio(Uri.fromFile(new File(audioPath)));
+            } else {
+                playCurrentChordAudio();
+            }
+        });
+
         backButton.setOnClickListener(v -> finish());
     }
 
@@ -63,10 +78,8 @@ public class FullscreenChordActivity extends AppCompatActivity {
     }
 
     private int getAudioResId(String chordName) {
-        chordName = chordName.trim().toLowerCase(); // Normalize input
-
+        chordName = chordName.trim().toLowerCase();
         switch (chordName) {
-            // Major Chords
             case "a":
             case "a major":
             case "a major (a)":
