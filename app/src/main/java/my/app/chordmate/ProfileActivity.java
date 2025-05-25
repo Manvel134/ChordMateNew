@@ -1,30 +1,16 @@
 package my.app.chordmate;
 
-import android.app.AlarmManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.example.chordmate.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -41,24 +27,14 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "ChordMatePrefs";
     private static final String USER_CHORDS_KEY = "user_chords";
-    private static final String REMINDER_ENABLED_KEY = "reminder_enabled";
-    private static final String REMINDER_HOUR_KEY = "reminder_hour";
-    private static final String REMINDER_MINUTE_KEY = "reminder_minute";
-    private static final String NOTIFICATION_CHANNEL_ID = "practice_reminder_channel";
-    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 100;
-    private static final int SCHEDULE_EXACT_ALARM_REQUEST_CODE = 101;
-    private static final int REMINDER_REQUEST_CODE = 1001;
 
     private TextView usernameText;
     private TextView chordsAddedText;
@@ -66,8 +42,6 @@ public class ProfileActivity extends AppCompatActivity {
     private TextInputEditText passwordInput;
     private Button saveButton;
     private Button logoutButton;
-    private SwitchCompat reminderSwitch;
-    private TextView reminderTimeText;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -104,15 +78,6 @@ public class ProfileActivity extends AppCompatActivity {
         // Initialize UI components
         initializeViews();
 
-        // Create notification channel
-        createNotificationChannel();
-
-        // Request notification permission if needed
-        requestNotificationPermission();
-
-        // Request exact alarm permission
-        requestExactAlarmPermission();
-
         // Set email from FirebaseUser as a fallback
         if (currentUser.getEmail() != null) {
             emailInput.setText(currentUser.getEmail());
@@ -127,14 +92,8 @@ public class ProfileActivity extends AppCompatActivity {
         // Load and display chord count
         loadChordCount();
 
-        // Load app settings
-        loadAppSettings();
-
         // Set up button listeners
         setupListeners();
-
-        // Restore reminder if enabled
-        restoreReminder();
     }
 
     private void initializeViews() {
@@ -144,35 +103,11 @@ public class ProfileActivity extends AppCompatActivity {
         passwordInput = findViewById(R.id.password_input);
         saveButton = findViewById(R.id.save_button);
         logoutButton = findViewById(R.id.logout_button);
-        reminderSwitch = findViewById(R.id.remind_switch);
-        reminderTimeText = findViewById(R.id.reminder_time_text);
     }
 
     private void setupListeners() {
         saveButton.setOnClickListener(v -> updateUserProfile());
         logoutButton.setOnClickListener(v -> logoutUser());
-        reminderSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                showTimePickerDialog();
-            } else {
-                cancelDailyReminder();
-                saveReminderSettings(false, 0, 0);
-            }
-        });
-        reminderTimeText.setOnClickListener(v -> {
-            if (reminderSwitch.isChecked()) {
-                showTimePickerDialog();
-            }
-        });
-    }
-
-    private void restoreReminder() {
-        boolean reminderEnabled = prefs.getBoolean(REMINDER_ENABLED_KEY, false);
-        if (reminderEnabled) {
-            int hour = prefs.getInt(REMINDER_HOUR_KEY, 19);
-            int minute = prefs.getInt(REMINDER_MINUTE_KEY, 0);
-            scheduleDailyReminder(hour, minute);
-        }
     }
 
     private void loadChordCount() {
@@ -186,185 +121,6 @@ public class ProfileActivity extends AppCompatActivity {
         Gson gson = new Gson();
         Type type = new TypeToken<List<Map<String, String>>>() {}.getType();
         return json != null ? gson.fromJson(json, type) : new ArrayList<>();
-    }
-
-    private void loadAppSettings() {
-        boolean reminderEnabled = prefs.getBoolean(REMINDER_ENABLED_KEY, false);
-        int reminderHour = prefs.getInt(REMINDER_HOUR_KEY, 19);
-        int minute = prefs.getInt(REMINDER_MINUTE_KEY, 0);
-
-        reminderSwitch.setChecked(reminderEnabled);
-        updateReminderTimeDisplay(reminderHour, minute);
-    }
-
-    private void updateReminderTimeDisplay(int hour, int minute) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-        String timeString = sdf.format(calendar.getTime());
-        reminderTimeText.setText("Reminder time: " + timeString);
-    }
-
-    private void showTimePickerDialog() {
-        int currentHour = prefs.getInt(REMINDER_HOUR_KEY, 19);
-        int currentMinute = prefs.getInt(REMINDER_MINUTE_KEY, 0);
-
-        TimePickerDialog timePickerDialog = new TimePickerDialog(
-                this,
-                (view, hourOfDay, minute) -> {
-                    updateReminderTimeDisplay(hourOfDay, minute);
-                    saveReminderSettings(true, hourOfDay, minute);
-                    scheduleDailyReminder(hourOfDay, minute);
-                    Toast.makeText(this, "Daily reminder set!", Toast.LENGTH_SHORT).show();
-                },
-                currentHour,
-                currentMinute,
-                false // 12-hour format
-        );
-
-        timePickerDialog.setTitle("Select Reminder Time");
-        timePickerDialog.show();
-    }
-
-    private void saveReminderSettings(boolean enabled, int hour, int minute) {
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean(REMINDER_ENABLED_KEY, enabled);
-        editor.putInt(REMINDER_HOUR_KEY, hour);
-        editor.putInt(REMINDER_MINUTE_KEY, minute);
-        editor.apply();
-    }
-
-    private void scheduleDailyReminder(int hour, int minute) {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, ReminderReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this,
-                REMINDER_REQUEST_CODE,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        // If time has passed for today, schedule for tomorrow
-        if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1);
-        }
-
-        // Cancel any existing alarms
-        alarmManager.cancel(pendingIntent);
-
-        // Schedule new alarm
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
-            requestExactAlarmPermission();
-            return;
-        }
-
-        alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                calendar.getTimeInMillis(),
-                pendingIntent
-        );
-    }
-
-    private void cancelDailyReminder() {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, ReminderReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this,
-                REMINDER_REQUEST_CODE,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
-
-        alarmManager.cancel(pendingIntent);
-        Toast.makeText(this, "Daily reminder cancelled", Toast.LENGTH_SHORT).show();
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Practice Reminders";
-            String description = "Daily practice reminder notifications";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            channel.enableVibration(true);
-            channel.enableLights(true);
-            channel.setLightColor(0xFF00FF00);
-
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private void requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS},
-                        NOTIFICATION_PERMISSION_REQUEST_CODE);
-            }
-        }
-    }
-
-    private void requestExactAlarmPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            if (!alarmManager.canScheduleExactAlarms()) {
-                Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, SCHEDULE_EXACT_ALARM_REQUEST_CODE);
-            }
-        }
-    }
-
-    private void requestBatteryOptimizationExemption() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-            intent.setData(Uri.parse("package:" + getPackageName()));
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show();
-                restoreReminder();
-            } else {
-                Toast.makeText(this, "Notification permission is required for reminders", Toast.LENGTH_LONG).show();
-                reminderSwitch.setChecked(false);
-                saveReminderSettings(false, 0, 0);
-            }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SCHEDULE_EXACT_ALARM_REQUEST_CODE) {
-            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms()) {
-                int hour = prefs.getInt(REMINDER_HOUR_KEY, 19);
-                int minute = prefs.getInt(REMINDER_MINUTE_KEY, 0);
-                scheduleDailyReminder(hour, minute);
-                Toast.makeText(this, "Exact alarm permission granted", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "Exact alarm permission required for reliable reminders", Toast.LENGTH_LONG).show();
-                reminderSwitch.setChecked(false);
-                saveReminderSettings(false, 0, 0);
-            }
-        }
     }
 
     private void loadUserData() {
