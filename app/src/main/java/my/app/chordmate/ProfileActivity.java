@@ -1,6 +1,7 @@
 package my.app.chordmate;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -22,8 +23,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity {
+
+    private static final String PREFS_NAME = "ChordMatePrefs";
+    private static final String USER_CHORDS_KEY = "user_chords";
 
     private TextView usernameText;
     private TextView chordsAddedText;
@@ -83,6 +94,9 @@ public class ProfileActivity extends AppCompatActivity {
         // Load user data from Firebase
         loadUserData();
 
+        // Load and display chord count
+        loadChordCount();
+
         // Set up save button listener
         saveButton.setOnClickListener(v -> {
             updateUserProfile();
@@ -92,6 +106,27 @@ public class ProfileActivity extends AppCompatActivity {
         logoutButton.setOnClickListener(v -> {
             logoutUser();
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh chord count when returning to this activity
+        loadChordCount();
+    }
+
+    private void loadChordCount() {
+        List<Map<String, String>> userChords = loadUserChords();
+        int chordCount = userChords.size();
+        chordsAddedText.setText(String.valueOf(chordCount));
+    }
+
+    private List<Map<String, String>> loadUserChords() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String json = prefs.getString(USER_CHORDS_KEY, null);
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<Map<String, String>>>() {}.getType();
+        return json != null ? gson.fromJson(json, type) : new ArrayList<>();
     }
 
     private void loadUserData() {
@@ -116,9 +151,6 @@ public class ProfileActivity extends AppCompatActivity {
                                 usernameText.setText(userData.getUsername());
                             }
                         }
-
-                        // You might need to add 'chordsAdded' field to your database
-                        chordsAddedText.setText("0");
 
                     } catch (Exception e) {
                         Toast.makeText(ProfileActivity.this,
