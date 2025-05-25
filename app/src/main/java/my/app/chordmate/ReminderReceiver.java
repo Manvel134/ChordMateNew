@@ -34,20 +34,17 @@ public class ReminderReceiver extends BroadcastReceiver {
         if (reminderEnabled) {
             createNotificationChannel(context);
             showNotification(context);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                rescheduleReminder(context, prefs);
-            }
+            rescheduleReminder(context, prefs);
         }
     }
 
     private void showNotification(Context context) {
         Intent notificationIntent = new Intent(context, MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
-                0,
+                REMINDER_REQUEST_CODE,
                 notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
@@ -65,7 +62,9 @@ public class ReminderReceiver extends BroadcastReceiver {
                 .setLights(0xFF00FF00, 1000, 1000);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(NOTIFICATION_ID, builder.build());
+        if (notificationManager != null) {
+            notificationManager.notify(NOTIFICATION_ID, builder.build());
+        }
     }
 
     private void rescheduleReminder(Context context, SharedPreferences prefs) {
@@ -73,8 +72,8 @@ public class ReminderReceiver extends BroadcastReceiver {
         int minute = prefs.getInt(REMINDER_MINUTE_KEY, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
-            return; // Skip rescheduling if permission is not granted
+        if (alarmManager == null) {
+            return;
         }
 
         Intent intent = new Intent(context, ReminderReceiver.class);
@@ -86,10 +85,19 @@ public class ReminderReceiver extends BroadcastReceiver {
         );
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        // Schedule for next day if time has passed
+        if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+            return;
+        }
 
         alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
@@ -110,7 +118,9 @@ public class ReminderReceiver extends BroadcastReceiver {
             channel.setLightColor(0xFF00FF00);
 
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
         }
     }
 }
